@@ -1,0 +1,56 @@
+#smallArc {
+  x: 50%-105;
+  y: 20;
+  width: 210;
+  height: 210;
+  fill: fb-cyan;
+  arc-width: 2;
+}
+
+#mediumArc {
+  x: 50%-115;
+  y: 10;
+  width: 230;
+  height: 230;
+  fill: fb-purple;
+  arc-width: 2;
+}
+
+#largeArc {
+  x: 50%-125;
+  y: 0;
+  width: 250;
+  height: 250;
+  fill: fb-pink;
+  arc-width: 2;
+}
+
+.background {
+  viewport-fill: fb-black;
+}
+
+.backgroundArc {
+  fill: fb-extra-dark-gray;
+  arc-width: 2;
+}
+
+.text {
+  font-family: SevilleSharp-Book;
+  fill: fb-white;
+}
+
+.mainText {
+  x: 50%;
+  y: 50%+12;
+  font-size: 75;
+  text-length: 20;
+  text-anchor: middle;
+}
+
+.subText {
+  x: 50%;
+  y: 50%+48;
+  font-size: 32;
+  text-length: 20;
+  text-anchor: middle;
+}

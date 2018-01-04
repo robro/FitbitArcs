@@ -1,0 +1,67 @@
+<svg class="background" >
+  <arc class="backgroundArc" x="50%-125" y="0" width="250" height="250" />
+  <arc class="backgroundArc" x="50%-115" y="10" width="230" height="230" />
+  <arc class="backgroundArc" x="50%-105" y="20" width="210" height="210" />
+
+  <arc id="smallArc" />
+  <arc id="mediumArc" />
+  <arc id="largeArc" />
+
+  <defs>
+    <symbol id="clock" class="text" >
+      <text id="clockText" class="mainText" />
+      <text id="dateText" class="subText" />
+      <animate attributeName="opacity"
+                begin="enable"
+                from="0"
+                to="1"
+                dur="0.3"
+                final="keep"
+                easing="ease-out" />
+    </symbol>
+
+    <symbol id="steps" class="text" >
+      <text id="stepCount" class="mainText" />
+      <text class="subText" >steps</text>
+      <animate attributeName="opacity"
+                begin="enable"
+                from="0"
+                to="1"
+                dur="0.12"
+                final="keep"
+                easing="ease-out" />
+    </symbol>
+
+    <symbol id="calories" class="text" >
+      <text id="calorieCount" class="mainText" />
+      <text class="subText" >calories</text>
+      <animate attributeName="opacity"
+                begin="enable"
+                from="0"
+                to="1"
+                dur="0.12"
+                final="keep"
+                easing="ease-out" />
+    </symbol>
+
+    <symbol id="heartbeat" class="text" >
+      <text id="bpm" class="mainText" />
+      <text class="subText" >bpm</text>
+      <animate attributeName="opacity"
+                begin="enable"
+                from="0"
+                to="1"
+                dur="0.12"
+                final="keep"
+                easing="ease-out" />
+    </symbol>
+
+  </defs>
+
+  <use id="clockState" href="#clock" display="inline" />
+  <use id="stepsState" href="#steps" display="none" />
+  <use id="caloriesState" href="#calories" display="none" />
+  <use id="heartbeatState" href="#heartbeat" display="none" />
+
+  <use id="screenButton" href="#push-button" y="0" height="100%" opacity="0" />
+</svg>

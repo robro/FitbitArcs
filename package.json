@@ -1,0 +1,19 @@
+{
+  "fitbit": {
+    "appUUID": "e47d7527-5c96-4ae7-a62a-c8ab610e9cb1",
+    "appType": "clockface",
+    "appDisplayName": "Arcs",
+    "iconFile": "resources/icon.png",
+    "wipeColor": "#607d8b",
+    "requestedPermissions": [
+      "access_activity",
+      "access_heart_rate",
+      "access_user_profile"
+    ],
+    "i18n": {
+      "en": {
+        "name": "Arcs"
+      }
+    }
+  }
+}
