@@ -8,9 +8,13 @@ class StateManager {
     this.currIndex = 0;
   }
 
-  get currState() { return this.states[this.currIndex]; }
+  get currState() {
+    return this.states[this.currIndex];
+  }
 
-  addState(state) { this.states.push(state); }
+  addState(state) {
+    this.states.push(state);
+  }
 
   getStateById(id) {
     for (let i = 0, length = this.states.length; i < length; i++) {
@@ -18,10 +22,10 @@ class StateManager {
     }
   }
 
-  switchState(state) {
+  switchState(str) {
     this.currState.stop();
 
-    switch (state) {
+    switch (str) {
       case "next":
         this.currIndex++;
         if (this.currIndex === this.states.length) this.currIndex = 0;
@@ -31,29 +35,31 @@ class StateManager {
         this.currIndex = 0;
         break;
     }
+    
     this.currState.start();
   }
 }
 
 class State {
-  constructor(state) {
-    this.id = state.id;
-    this.element = document.getElementById(state.id);
-    this.mainText = document.getElementById(state.mainText);
-    if (state.subText) this.subText = document.getElementById(state.subText);
-    if (state.arc) this.arc = state.arc;
-    if (state.arcs) this.arcs = state.arcs;
-    if (state.start) this.customStart = state.start;
-    if (state.stop) this.customStop = state.stop;
-    if (state.event) this.event = state.event;
+  constructor(obj) {
+    this.id = obj.id;
+    this.element = document.getElementById(obj.id);
+    this.text = document.getElementById(obj.text);
+    if (obj.subText) this.subText = document.getElementById(obj.subText);
+    this.arc = obj.arc;
+    this.customStart = obj.start;
+    this.customStop = obj.stop;
+    this.event = obj.event;
   }
 
-  set display(str) { this.element.style.display = str; }
+  set display(str) {
+    this.element.style.display = str;
+  }
 
   update() {
-    if (this.arcs) {
-      for (let i = 0, length = this.arcs.length; i < length; i++) {
-        this.arcs[i].update();
+    if (Array.isArray(this.arc)) {
+      for (let i = 0, length = this.arc.length; i < length; i++) {
+        this.arc[i].update();
       }
     } else {
       this.arc.update();
@@ -61,26 +67,28 @@ class State {
   }
 
   reset() {
-    if (this.arcs) {
-      for (let i = 0, length = this.arcs.length; i < length; i++) {
-        this.arcs[i].reset();
+    if (Array.isArray(this.arc)) {
+      for (let i = 0, length = this.arc.length; i < length; i++) {
+        this.arc[i].reset();
       }
     } else {
       this.arc.reset();
     }
   }
-
-  animate() { this.element.animate("enable"); }
-
+  
   start() {
     if (this.customStart) this.customStart();
     this.display = "inline";
     this.animate();
   }
-
+  
   stop() {
     if (this.customStop) this.customStop();
     this.display = "none";
     this.reset();
+  }
+  
+  animate() {
+    this.element.animate("enable");
   }
 }

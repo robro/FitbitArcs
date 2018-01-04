@@ -1,13 +1,12 @@
 import clock from "clock";
 import document from "document";
-import { today, goals } from "user-activity";
-import { user } from "user-profile";
 import { display } from "display";
 import { HeartRateSensor } from "heart-rate";
+import { goals, today } from "user-activity";
 
-import * as util from "../common/utils";
 import Arc from "../common/arc";
-import { StateManager, State } from "../common/state";
+import { State, StateManager } from "../common/state";
+import { addComma, getDay3, monoDigits, zeroPad } from "../common/utils";
 
 clock.granularity = "seconds";
 
@@ -16,6 +15,8 @@ const TICK_DUR = 3;
 const SECONDS_DUR = 10;
 const MINUTES_DUR = 12;
 const HOURS_DUR = 14;
+
+const POLL_TIME = 2000; // ms
 
 let smallArc = new Arc("smallArc");
 let mediumArc = new Arc("mediumArc");
@@ -27,9 +28,9 @@ let sm = new StateManager();
 
 sm.addState(new State({
   id: "clockState",
-  mainText: "clockText",
+  text: "clockText",
   subText: "dateText",
-  arcs: [smallArc, mediumArc, largeArc],
+  arc: [smallArc, mediumArc, largeArc],
   start: function() {
     clock.granularity = "seconds";
     this.event();
@@ -43,17 +44,17 @@ sm.addState(new State({
     let minutes = time.getMinutes();
     let hours = time.getHours() % 12;
 
-    let hoursStr = util.monoDigits(hours ? hours : 12);
-    let minutesStr = util.monoDigits(util.zeroPad(minutes));
-    let dayStr = util.getDay3(time.getDay());
+    let hoursStr = monoDigits(hours ? hours : 12);
+    let minutesStr = monoDigits(zeroPad(minutes));
+    let dayStr = getDay3(time.getDay());
     let dateStr = time.getDate()
 
-    this.mainText.text = `${hoursStr}:${minutesStr}`;
+    this.text.text = `${hoursStr}:${minutesStr}`;
     this.subText.text = `${dayStr} ${dateStr}`;
 
-    let secondsArc = this.arcs[0];
-    let minutesArc = this.arcs[1];
-    let hoursArc = this.arcs[2];
+    let secondsArc = this.arc[0];
+    let minutesArc = this.arc[1];
+    let hoursArc = this.arc[2];
 
     secondsArc.tween(secondsArc.angle,
                      seconds * 6,
@@ -79,13 +80,13 @@ sm.addState(new State({
 
 sm.addState(new State({
   id: "stepsState",
-  mainText: "stepCount",
+  text: "stepCount",
   arc: smallArc,
   start: function() {
     this.event();
     this.poll = setInterval(() => {
       this.event();
-    }, 2000);
+    }, POLL_TIME);
   },
   stop: function() {
     clearInterval(this.poll);
@@ -95,25 +96,25 @@ sm.addState(new State({
                    (today.local.steps < goals.steps) ?
                    (today.local.steps / goals.steps * 360) : 360,
                    SECONDS_DUR);
-    this.mainText.text = util.formatNum(today.local.steps);
+    this.text.text = addComma(today.local.steps);
 
-    if (this.mainText.text.length > 5) {
-      this.mainText.style.fontSize = 64;
+    if (this.text.text.length > 5) {
+      this.text.style.fontSize = 64;
     } else {
-      this.mainText.style.fontSize = 75;
+      this.text.style.fontSize = 75;
     }
   }
 }));
 
 sm.addState(new State({
   id: "caloriesState",
-  mainText: "calorieCount",
+  text: "calorieCount",
   arc: mediumArc,
   start: function() {
     this.event();
     this.poll = setInterval(() => {
       this.event();
-    }, 2000);
+    }, POLL_TIME);
   },
   stop: function() {
     clearInterval(this.poll);
@@ -123,24 +124,26 @@ sm.addState(new State({
                    (today.local.calories < goals.calories) ?
                    (today.local.calories / goals.calories * 360) : 360,
                    SECONDS_DUR);
-    this.mainText.text = util.formatNum(today.local.calories);
+    this.text.text = addComma(today.local.calories);
   }
 }));
 
 sm.addState(new State({
   id: "heartbeatState",
-  mainText: "bpm",
+  text: "bpm",
   arc: largeArc,
   start: function() {
     this.lastBeat = null;
     this.poll = setInterval(() => {
       if (hrm.timestamp - this.lastBeat === 0) {
+        // Not reading heartbeat
         this.arc.tween(this.arc.angle, 0, SECONDS_DUR + 20);
-        this.mainText.text = "--";
+        this.text.text = "--";
       }
       this.lastBeat = hrm.timestamp;
-    }, 2000);
-    this.mainText.text = "--";
+    }, POLL_TIME);
+    
+    this.text.text = "--";
     hrm.start();
   },
   stop: function() {
@@ -149,7 +152,7 @@ sm.addState(new State({
   },
   event: function() {
     this.arc.tween(this.arc.angle, (hrm.heartRate / 200) * 360, SECONDS_DUR);
-    this.mainText.text = hrm.heartRate;
+    this.text.text = hrm.heartRate;
   }
 }));
 
