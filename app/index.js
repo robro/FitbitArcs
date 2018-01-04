@@ -45,29 +45,32 @@ sm.addState(new State({
 
     let hoursStr = util.monoDigits(hours ? hours : 12);
     let minutesStr = util.monoDigits(util.zeroPad(minutes));
-
     let dayStr = util.getDay3(time.getDay());
     let dateStr = time.getDate()
 
     this.mainText.text = `${hoursStr}:${minutesStr}`;
     this.subText.text = `${dayStr} ${dateStr}`;
 
-    this.arcs[0].tween(this.arcs[0].angle,
-                       seconds * 6,
-                       ((seconds * 6 - this.arcs[0].angle) > 6) ? SECONDS_DUR : TICK_DUR);
-    this.arcs[1].tween(this.arcs[1].angle,
-                       (minutes + (seconds / 60)) * 6,
-                       MINUTES_DUR);
-    this.arcs[2].tween(this.arcs[2].angle,
-                       (hours + ((minutes + (seconds / 60)) / 60)) * 30,
-                       HOURS_DUR);
+    let secondsArc = this.arcs[0];
+    let minutesArc = this.arcs[1];
+    let hoursArc = this.arcs[2];
+
+    secondsArc.tween(secondsArc.angle,
+                     seconds * 6,
+                     ((seconds * 6 - secondsArc.angle) > 6) ? SECONDS_DUR : TICK_DUR);
+    minutesArc.tween(minutesArc.angle,
+                     (minutes + (seconds / 60)) * 6,
+                     MINUTES_DUR);
+    hoursArc.tween(hoursArc.angle,
+                   (hours + ((minutes + (seconds / 60)) / 60)) * 30,
+                   HOURS_DUR);
 
     if (seconds === 0) {
-      this.arcs[0].tween(-360, 0, SECONDS_DUR + 4, "inOutQuart");
+      secondsArc.tween(-360, 0, SECONDS_DUR + 4, "inOutQuart");
       if (minutes === 0) {
-        this.arcs[1].tween(-360, 0, MINUTES_DUR + 4, "inOutQuart");
+        minutesArc.tween(-360, 0, MINUTES_DUR + 4, "inOutQuart");
         if (hours === 0) {
-          this.arcs[2].tween(-360, 0, HOURS_DUR + 4, "inOutQuart");
+          hoursArc.tween(-360, 0, HOURS_DUR + 4, "inOutQuart");
         }
       }
     }
@@ -77,7 +80,7 @@ sm.addState(new State({
 sm.addState(new State({
   id: "stepsState",
   mainText: "stepCount",
-  arcs: [smallArc],
+  arc: smallArc,
   start: function() {
     this.event();
     this.poll = setInterval(() => {
@@ -88,10 +91,10 @@ sm.addState(new State({
     clearInterval(this.poll);
   },
   event: function() {
-    this.arcs[0].tween(this.arcs[0].angle,
-                       (today.local.steps < goals.steps) ?
-                       (today.local.steps / goals.steps * 360) : 360,
-                       SECONDS_DUR);
+    this.arc.tween(this.arc.angle,
+                   (today.local.steps < goals.steps) ?
+                   (today.local.steps / goals.steps * 360) : 360,
+                   SECONDS_DUR);
     this.mainText.text = util.formatNum(today.local.steps);
 
     if (this.mainText.text.length > 5) {
@@ -105,7 +108,7 @@ sm.addState(new State({
 sm.addState(new State({
   id: "caloriesState",
   mainText: "calorieCount",
-  arcs: [mediumArc],
+  arc: mediumArc,
   start: function() {
     this.event();
     this.poll = setInterval(() => {
@@ -116,10 +119,10 @@ sm.addState(new State({
     clearInterval(this.poll);
   },
   event: function() {
-    this.arcs[0].tween(this.arcs[0].angle,
-                       (today.local.calories < goals.calories) ?
-                       (today.local.calories / goals.calories * 360) : 360,
-                       SECONDS_DUR);
+    this.arc.tween(this.arc.angle,
+                   (today.local.calories < goals.calories) ?
+                   (today.local.calories / goals.calories * 360) : 360,
+                   SECONDS_DUR);
     this.mainText.text = util.formatNum(today.local.calories);
   }
 }));
@@ -127,12 +130,12 @@ sm.addState(new State({
 sm.addState(new State({
   id: "heartbeatState",
   mainText: "bpm",
-  arcs: [largeArc],
+  arc: largeArc,
   start: function() {
     this.lastBeat = null;
     this.poll = setInterval(() => {
       if (hrm.timestamp - this.lastBeat === 0) {
-        this.arcs[0].tween(this.arcs[0].angle, 0, SECONDS_DUR + 20);
+        this.arc.tween(this.arc.angle, 0, SECONDS_DUR + 20);
         this.mainText.text = "--";
       }
       this.lastBeat = hrm.timestamp;
@@ -145,7 +148,7 @@ sm.addState(new State({
     hrm.stop();
   },
   event: function() {
-    this.arcs[0].tween(this.arcs[0].angle, (hrm.heartRate / 200) * 360, SECONDS_DUR);
+    this.arc.tween(this.arc.angle, (hrm.heartRate / 200) * 360, SECONDS_DUR);
     this.mainText.text = hrm.heartRate;
   }
 }));

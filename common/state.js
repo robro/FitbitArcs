@@ -40,25 +40,33 @@ class State {
     this.id = state.id;
     this.element = document.getElementById(state.id);
     this.mainText = document.getElementById(state.mainText);
-    this.arcs = state.arcs;
-
     if (state.subText) this.subText = document.getElementById(state.subText);
+    if (state.arc) this.arc = state.arc;
+    if (state.arcs) this.arcs = state.arcs;
     if (state.start) this.customStart = state.start;
     if (state.stop) this.customStop = state.stop;
-    if (state.event) this.customEvent = state.event;
+    if (state.event) this.event = state.event;
   }
 
   set display(str) { this.element.style.display = str; }
 
   update() {
-    for (let i = 0, length = this.arcs.length; i < length; i++) {
-      this.arcs[i].update();
+    if (this.arcs) {
+      for (let i = 0, length = this.arcs.length; i < length; i++) {
+        this.arcs[i].update();
+      }
+    } else {
+      this.arc.update();
     }
   }
 
   reset() {
-    for (let i = 0, length = this.arcs.length; i < length; i++) {
-      this.arcs[i].reset();
+    if (this.arcs) {
+      for (let i = 0, length = this.arcs.length; i < length; i++) {
+        this.arcs[i].reset();
+      }
+    } else {
+      this.arc.reset();
     }
   }
 
@@ -75,6 +83,4 @@ class State {
     this.display = "none";
     this.reset();
   }
-
-  event() { if (this.customEvent) this.customEvent(); }
 }
