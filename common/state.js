@@ -3,23 +3,15 @@ import document from "document";
 export { StateManager, State };
 
 class StateManager {
-  constructor() {
-    this.states = [];
-    this.currIndex = 0;
-  }
+    states = [];
+    index = 0;
 
   get currState() {
-    return this.states[this.currIndex];
+    return this.states[this.index];
   }
 
   addState(state) {
     this.states.push(state);
-  }
-
-  getStateById(id) {
-    for (let i = 0, length = this.states.length; i < length; i++) {
-      if (this.states[i].id === id) return this.states[i];
-    }
   }
 
   switchState(str) {
@@ -27,12 +19,12 @@ class StateManager {
 
     switch (str) {
       case "next":
-        this.currIndex++;
-        if (this.currIndex === this.states.length) this.currIndex = 0;
+        this.index++;
+        if (this.index === this.states.length) this.index = 0;
         break;
 
       case "default":
-        this.currIndex = 0;
+        this.index = 0;
         break;
     }
     
@@ -42,49 +34,36 @@ class StateManager {
 
 class State {
   constructor(obj) {
-    this.id = obj.id;
-    this.element = document.getElementById(obj.id);
-    this.text = document.getElementById(obj.text);
-    if (obj.subText) this.subText = document.getElementById(obj.subText);
-    this.arc = obj.arc;
-    this.customStart = obj.start;
-    this.customStop = obj.stop;
+    this.element = document.getElementById(obj.elementId);
+    this.mainText = document.getElementById(obj.mainTextId);
+    if (obj.subTextId) this.subText = document.getElementById(obj.subTextId);
+    this.arcs = obj.arcs;
+    this._start = obj.start;
+    this._stop = obj.stop;
     this.event = obj.event;
   }
 
-  set display(str) {
-    this.element.style.display = str;
-  }
-
   update() {
-    if (Array.isArray(this.arc)) {
-      for (let i = 0, length = this.arc.length; i < length; i++) {
-        this.arc[i].update();
-      }
-    } else {
-      this.arc.update();
+    for (let i = 0, length = this.arcs.length; i < length; i++) {
+      this.arcs[i].update();
     }
   }
 
   reset() {
-    if (Array.isArray(this.arc)) {
-      for (let i = 0, length = this.arc.length; i < length; i++) {
-        this.arc[i].reset();
-      }
-    } else {
-      this.arc.reset();
+    for (let i = 0, length = this.arcs.length; i < length; i++) {
+      this.arcs[i].reset();
     }
   }
   
   start() {
-    if (this.customStart) this.customStart();
-    this.display = "inline";
+    this._start();
+    this.element.style.display = "inline";
     this.animate();
   }
   
   stop() {
-    if (this.customStop) this.customStop();
-    this.display = "none";
+    this._stop();
+    this.element.style.display = "none";
     this.reset();
   }
   

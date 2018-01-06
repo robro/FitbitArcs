@@ -8,8 +8,8 @@ export function getDay3(index) {
 export function ease(t, b, c, d, type) {
   switch (type) {
     case "inOutQuart":
-      if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
-	    return -c/2 * ((t-=2)*t*t*t - 2) + b;
+      if ((t/=d/2) < 1) return c/2 * Math.pow(t, 4) + b;
+	    return -c/2 * (Math.pow(t-2, 4) - 2) + b;
       
     default: // outExpo
       return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;

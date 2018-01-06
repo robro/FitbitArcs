@@ -12,9 +12,9 @@ clock.granularity = "seconds";
 
 // Duration in frames
 const TICK_DUR = 3;
-const SECONDS_DUR = 10;
-const MINUTES_DUR = 12;
-const HOURS_DUR = 14;
+const SHORT_DUR = 10;
+const MEDIUM_DUR = 12;
+const LONG_DUR = 14;
 
 const POLL_TIME = 2000; // ms
 
@@ -27,10 +27,10 @@ let hrm = new HeartRateSensor();
 let sm = new StateManager();
 
 sm.addState(new State({
-  id: "clockState",
-  text: "clockText",
-  subText: "dateText",
-  arc: [smallArc, mediumArc, largeArc],
+  elementId: "clock",
+  mainTextId: "digits",
+  subTextId: "date",
+  arcs: [smallArc, mediumArc, largeArc],
   start: function() {
     clock.granularity = "seconds";
     this.event();
@@ -49,39 +49,36 @@ sm.addState(new State({
     let dayStr = getDay3(time.getDay());
     let dateStr = time.getDate()
 
-    this.text.text = `${hoursStr}:${minutesStr}`;
+    this.mainText.text = `${hoursStr}:${minutesStr}`;
     this.subText.text = `${dayStr} ${dateStr}`;
 
-    let secondsArc = this.arc[0];
-    let minutesArc = this.arc[1];
-    let hoursArc = this.arc[2];
+    let [secondsArc, minutesArc, hoursArc] = this.arcs;
 
-    secondsArc.tween(secondsArc.angle,
-                     seconds * 6,
-                     ((seconds * 6 - secondsArc.angle) > 6) ? SECONDS_DUR : TICK_DUR);
-    minutesArc.tween(minutesArc.angle,
-                     (minutes + (seconds / 60)) * 6,
-                     MINUTES_DUR);
-    hoursArc.tween(hoursArc.angle,
-                   (hours + ((minutes + (seconds / 60)) / 60)) * 30,
-                   HOURS_DUR);
+    let secondsAngle = seconds * 6;
+    let minutesAngle = Math.floor((minutes + (seconds / 60)) * 6);
+    let hoursAngle = Math.floor((hours + ((minutes + (seconds / 60)) / 60)) * 30);
 
-    if (seconds === 0) {
-      secondsArc.tween(-360, 0, SECONDS_DUR + 4, "inOutQuart");
-      if (minutes === 0) {
-        minutesArc.tween(-360, 0, MINUTES_DUR + 4, "inOutQuart");
-        if (hours === 0) {
-          hoursArc.tween(-360, 0, HOURS_DUR + 4, "inOutQuart");
-        }
-      }
-    }
+    secondsArc.tween(secondsArc.angle, secondsAngle,
+                     secondsAngle - secondsArc.angle > 6 ?
+                     SHORT_DUR : TICK_DUR);
+    minutesArc.tween(minutesArc.angle, minutesAngle, MEDIUM_DUR);
+    hoursArc.tween(hoursArc.angle, hoursAngle, LONG_DUR);
+
+    if (seconds != 0) return;
+    secondsArc.tween(-360, 0, SHORT_DUR + 4, "inOutQuart");
+
+    if (minutes != 0) return;
+    minutesArc.tween(-360, 0, MEDIUM_DUR + 4, "inOutQuart");
+
+    if (hours != 0) return;
+    hoursArc.tween(-360, 0, LONG_DUR + 4, "inOutQuart");
   }
 }));
 
 sm.addState(new State({
-  id: "stepsState",
-  text: "stepCount",
-  arc: smallArc,
+  elementId: "steps",
+  mainTextId: "stepCount",
+  arcs: [smallArc],
   start: function() {
     this.event();
     this.poll = setInterval(() => {
@@ -92,24 +89,25 @@ sm.addState(new State({
     clearInterval(this.poll);
   },
   event: function() {
-    this.arc.tween(this.arc.angle,
-                   (today.local.steps < goals.steps) ?
-                   (today.local.steps / goals.steps * 360) : 360,
-                   SECONDS_DUR);
-    this.text.text = addComma(today.local.steps);
+    let [stepsArc] = this.arcs;
+    stepsArc.tween(stepsArc.angle,
+                   today.local.steps < goals.steps ?
+                   today.local.steps / goals.steps * 360 : 360,
+                   SHORT_DUR);
+    this.mainText.text = addComma(today.local.steps);
 
-    if (this.text.text.length > 5) {
-      this.text.style.fontSize = 64;
+    if (this.mainText.text.length > 5) {
+      this.mainText.style.fontSize = 64;
     } else {
-      this.text.style.fontSize = 75;
+      this.mainText.style.fontSize = 75;
     }
   }
 }));
 
 sm.addState(new State({
-  id: "caloriesState",
-  text: "calorieCount",
-  arc: mediumArc,
+  elementId: "calories",
+  mainTextId: "calorieCount",
+  arcs: [mediumArc],
   start: function() {
     this.event();
     this.poll = setInterval(() => {
@@ -120,50 +118,50 @@ sm.addState(new State({
     clearInterval(this.poll);
   },
   event: function() {
-    this.arc.tween(this.arc.angle,
-                   (today.local.calories < goals.calories) ?
-                   (today.local.calories / goals.calories * 360) : 360,
-                   SECONDS_DUR);
-    this.text.text = addComma(today.local.calories);
+    let [caloriesArc] = this.arcs;
+    caloriesArc.tween(caloriesArc.angle,
+                      today.local.calories < goals.calories ?
+                      today.local.calories / goals.calories * 360 : 360,
+                      SHORT_DUR);
+    this.mainText.text = addComma(today.local.calories);
   }
 }));
 
 sm.addState(new State({
-  id: "heartbeatState",
-  text: "bpm",
-  arc: largeArc,
+  elementId: "heartRate",
+  mainTextId: "bpm",
+  arcs: [largeArc],
   start: function() {
+    hrm.start();
     this.lastBeat = null;
+    this.mainText.text = "--";
+
     this.poll = setInterval(() => {
       if (hrm.timestamp - this.lastBeat === 0) {
-        // Not reading heartbeat
-        this.arc.tween(this.arc.angle, 0, SECONDS_DUR + 20);
-        this.text.text = "--";
+        let [heartRateArc] = this.arcs;
+
+        heartRateArc.tween(heartRateArc.angle, 0, SHORT_DUR + 15);
+        this.mainText.text = "--";
       }
       this.lastBeat = hrm.timestamp;
     }, POLL_TIME);
-    
-    this.text.text = "--";
-    hrm.start();
   },
   stop: function() {
     clearInterval(this.poll);
     hrm.stop();
   },
   event: function() {
-    this.arc.tween(this.arc.angle, (hrm.heartRate / 200) * 360, SECONDS_DUR);
-    this.text.text = hrm.heartRate;
+    let [heartRateArc] = this.arcs;
+
+    heartRateArc.tween(heartRateArc.angle, hrm.heartRate / 200 * 360, SHORT_DUR);
+    this.mainText.text = hrm.heartRate;
   }
 }));
 
 let screenButton = document.getElementById("screenButton");
 
-function updateClock() {
-  sm.getStateById("clockState").event();
-}
-
-function updateHeartRate() {
-  sm.getStateById("heartbeatState").event();
+function updateState() {
+  sm.currState.event();
 }
 
 function nextState() {
@@ -174,19 +172,19 @@ function resetState() {
   if (!display.on) sm.switchState("default");
 }
 
-function update() {
+function updateArcs() {
   sm.currState.update();
 
-  requestAnimationFrame(update);
+  requestAnimationFrame(updateArcs);
 }
 
-requestAnimationFrame(update);
+requestAnimationFrame(updateArcs);
 
 // Update the clock when a tick occurs
-clock.ontick = () => updateClock();
+clock.ontick = () => updateState();
 
-// Update heartrate when a reading occurs
-hrm.onreading = () => updateHeartRate();
+// Update heart rate when a reading occurs
+hrm.onreading = () => updateState();
 
 // Switch to the next state when the user taps the screen
 screenButton.onactivate = () => nextState();
