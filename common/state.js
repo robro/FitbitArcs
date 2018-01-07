@@ -23,7 +23,6 @@ class StateManager {
 
       case "default":
         this.index = 0;
-        break;
     }
     
     this.currState.start();
@@ -36,11 +35,11 @@ class State {
   }
 
   update() {
-    this.arcs.forEach(arc => arc.update())
+    this.arcs.forEach(arc => arc.update());
   }
 
   reset() {
-    this.arcs.forEach(arc => arc.reset())
+    this.arcs.forEach(arc => arc.reset());
   }
   
   start() {
