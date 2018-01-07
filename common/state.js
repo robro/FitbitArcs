@@ -1,5 +1,3 @@
-import document from "document";
-
 export { StateManager, State };
 
 class StateManager {
@@ -34,12 +32,7 @@ class StateManager {
 
 class State {
   constructor(init) {
-    for (let prop in init) {
-      this[prop] = init[prop];
-    }
-    this.element = document.getElementById(this.elementId);
-    this.mainText = document.getElementById(this.mainTextId);
-    if (this.subTextId) this.subText = document.getElementById(this.subTextId);
+    for (let prop in init) this[prop] = init[prop];
   }
 
   update() {

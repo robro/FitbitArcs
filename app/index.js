@@ -26,10 +26,12 @@ let hrm = new HeartRateSensor();
 
 let sm = new StateManager();
 
+let $ = id => document.getElementById(id);
+
 sm.addState(new State({
-  elementId: "clock",
-  mainTextId: "digits",
-  subTextId: "date",
+  element: $("clock"),
+  mainText: $("digits"),
+  subText: $("date"),
   arcs: [smallArc, mediumArc, largeArc],
   customStart: function() {
     clock.granularity = "seconds";
@@ -76,8 +78,8 @@ sm.addState(new State({
 }));
 
 sm.addState(new State({
-  elementId: "steps",
-  mainTextId: "stepCount",
+  element: $("steps"),
+  mainText: $("stepCount"),
   arcs: [smallArc],
   customStart: function() {
     this.event();
@@ -105,8 +107,8 @@ sm.addState(new State({
 }));
 
 sm.addState(new State({
-  elementId: "calories",
-  mainTextId: "calorieCount",
+  element: $("calories"),
+  mainText: $("calorieCount"),
   arcs: [mediumArc],
   customStart: function() {
     this.event();
@@ -128,8 +130,8 @@ sm.addState(new State({
 }));
 
 sm.addState(new State({
-  elementId: "heartRate",
-  mainTextId: "bpm",
+  element: $("heartRate"),
+  mainText: $("bpm"),
   arcs: [largeArc],
   customStart: function() {
     hrm.start();
@@ -158,7 +160,7 @@ sm.addState(new State({
   }
 }));
 
-let screenButton = document.getElementById("screenButton");
+let screenButton = $("screenButton");
 
 function updateState() {
   sm.currState.event();
