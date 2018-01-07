@@ -33,14 +33,13 @@ class StateManager {
 }
 
 class State {
-  constructor(obj) {
-    this.element = document.getElementById(obj.elementId);
-    this.mainText = document.getElementById(obj.mainTextId);
-    if (obj.subTextId) this.subText = document.getElementById(obj.subTextId);
-    this.arcs = obj.arcs;
-    this._start = obj.start;
-    this._stop = obj.stop;
-    this.event = obj.event;
+  constructor(init) {
+    for (let prop in init) {
+      this[prop] = init[prop];
+    }
+    this.element = document.getElementById(this.elementId);
+    this.mainText = document.getElementById(this.mainTextId);
+    if (this.subTextId) this.subText = document.getElementById(this.subTextId);
   }
 
   update() {
@@ -56,13 +55,13 @@ class State {
   }
   
   start() {
-    this._start();
+    this.customStart();
     this.element.style.display = "inline";
     this.animate();
   }
   
   stop() {
-    this._stop();
+    this.customStop();
     this.element.style.display = "none";
     this.reset();
   }

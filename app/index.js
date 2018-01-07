@@ -31,11 +31,11 @@ sm.addState(new State({
   mainTextId: "digits",
   subTextId: "date",
   arcs: [smallArc, mediumArc, largeArc],
-  start: function() {
+  customStart: function() {
     clock.granularity = "seconds";
     this.event();
   },
-  stop: function() {
+  customStop: function() {
     clock.granularity = "off";
   },
   event: function() {
@@ -79,13 +79,13 @@ sm.addState(new State({
   elementId: "steps",
   mainTextId: "stepCount",
   arcs: [smallArc],
-  start: function() {
+  customStart: function() {
     this.event();
     this.poll = setInterval(() => {
       this.event();
     }, POLL_TIME);
   },
-  stop: function() {
+  customStop: function() {
     clearInterval(this.poll);
   },
   event: function() {
@@ -108,13 +108,13 @@ sm.addState(new State({
   elementId: "calories",
   mainTextId: "calorieCount",
   arcs: [mediumArc],
-  start: function() {
+  customStart: function() {
     this.event();
     this.poll = setInterval(() => {
       this.event();
     }, POLL_TIME);
   },
-  stop: function() {
+  customStop: function() {
     clearInterval(this.poll);
   },
   event: function() {
@@ -131,7 +131,7 @@ sm.addState(new State({
   elementId: "heartRate",
   mainTextId: "bpm",
   arcs: [largeArc],
-  start: function() {
+  customStart: function() {
     hrm.start();
     this.lastBeat = null;
     this.mainText.text = "--";
@@ -146,7 +146,7 @@ sm.addState(new State({
       this.lastBeat = hrm.timestamp;
     }, POLL_TIME);
   },
-  stop: function() {
+  customStop: function() {
     clearInterval(this.poll);
     hrm.stop();
   },
