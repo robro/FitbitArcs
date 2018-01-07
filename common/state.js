@@ -36,30 +36,22 @@ class State {
   }
 
   update() {
-    for (let i = 0, length = this.arcs.length; i < length; i++) {
-      this.arcs[i].update();
-    }
+    this.arcs.forEach(arc => arc.update())
   }
 
   reset() {
-    for (let i = 0, length = this.arcs.length; i < length; i++) {
-      this.arcs[i].reset();
-    }
+    this.arcs.forEach(arc => arc.reset())
   }
   
   start() {
     this.customStart();
     this.element.style.display = "inline";
-    this.animate();
+    this.element.animate("enable");
   }
   
   stop() {
     this.customStop();
     this.element.style.display = "none";
     this.reset();
-  }
-  
-  animate() {
-    this.element.animate("enable");
   }
 }

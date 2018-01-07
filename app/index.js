@@ -83,9 +83,7 @@ sm.addState(new State({
   arcs: [smallArc],
   customStart: function() {
     this.event();
-    this.poll = setInterval(() => {
-      this.event();
-    }, POLL_TIME);
+    this.poll = setInterval(() => this.event(), POLL_TIME);
   },
   customStop: function() {
     clearInterval(this.poll);
@@ -112,9 +110,7 @@ sm.addState(new State({
   arcs: [mediumArc],
   customStart: function() {
     this.event();
-    this.poll = setInterval(() => {
-      this.event();
-    }, POLL_TIME);
+    this.poll = setInterval(() => this.event(), POLL_TIME);
   },
   customStop: function() {
     clearInterval(this.poll);
