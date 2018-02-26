@@ -5,7 +5,7 @@
   height: 210;
   fill: fb-cyan;
   arc-width: 2;
-  sweep-angle: 360;
+  sweep-angle: 0;
 }
 
 #mediumArc {
@@ -15,7 +15,7 @@
   height: 230;
   fill: fb-purple;
   arc-width: 2;
-  sweep-angle: 360;
+  sweep-angle: 0;
 }
 
 #largeArc {
@@ -25,7 +25,7 @@
   height: 250;
   fill: fb-pink;
   arc-width: 2;
-  sweep-angle: 360;
+  sweep-angle: 0;
 }
 
 .background {
