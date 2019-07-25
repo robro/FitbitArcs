@@ -48,11 +48,11 @@ sm.addState(new State({
     let seconds = time.getSeconds();
     let minutes = time.getMinutes();
     let hours = time.getHours();
-    if (preferences.clockDisplay === FORMAT_PREF_12H) {
-      hours = hours % 12;
+    if(preferences.clockDisplay === FORMAT_PREF_12H) {
+      hours = hours % 12 ? hours % 12 : 12
     }
 
-    let hoursStr = monoDigits(hours ? hours : 12);
+    let hoursStr = monoDigits(hours);
     let minutesStr = monoDigits(zeroPad(minutes));
     let dayStr = getDay3(time.getDay());
     let dateStr = time.getDate()
