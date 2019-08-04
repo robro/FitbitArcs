@@ -64,7 +64,8 @@ sm.addState(new State({
 
     let secondsAngle = seconds * 6;
     let minutesAngle = Math.floor((minutes + (seconds / 60)) * 6);
-    let hoursAngle = Math.floor((hours + ((minutes + (seconds / 60)) / 60)) * 30);
+    let hourAngleFactor = preferences.clockDisplay === FORMAT_PREF_12H ? 30 : 15
+    let hoursAngle = Math.floor((hours + ((minutes + (seconds / 60)) / 60)) * hourAngleFactor);
 
     secondsArc.tween(secondsArc.angle, secondsAngle,
                      secondsAngle - secondsArc.angle > 6 ?
