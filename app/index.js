@@ -3,6 +3,7 @@ import document from "document";
 import { display } from "display";
 import { HeartRateSensor } from "heart-rate";
 import { goals, today } from "user-activity";
+import { preferences } from "user-settings";
 
 import Arc from "../common/arc";
 import { State, StateManager } from "../common/state";
@@ -17,6 +18,8 @@ const MEDIUM_DUR = 12;
 const LONG_DUR = 14;
 
 const POLL_TIME = 2000; // ms
+
+const FORMAT_PREF_12H = "12h"; // derived by fitbit preferences
 
 let smallArc = new Arc("smallArc");
 let mediumArc = new Arc("mediumArc");
@@ -44,9 +47,12 @@ sm.addState(new State({
     let time = new Date();
     let seconds = time.getSeconds();
     let minutes = time.getMinutes();
-    let hours = time.getHours() % 12;
+    let hours = time.getHours();
+    if(preferences.clockDisplay === FORMAT_PREF_12H) {
+      hours = hours % 12 ? hours % 12 : 12
+    }
 
-    let hoursStr = monoDigits(hours ? hours : 12);
+    let hoursStr = monoDigits(hours);
     let minutesStr = monoDigits(zeroPad(minutes));
     let dayStr = getDay3(time.getDay());
     let dateStr = time.getDate()
@@ -58,7 +64,8 @@ sm.addState(new State({
 
     let secondsAngle = seconds * 6;
     let minutesAngle = Math.floor((minutes + (seconds / 60)) * 6);
-    let hoursAngle = Math.floor((hours + ((minutes + (seconds / 60)) / 60)) * 30);
+    let hourAngleFactor = preferences.clockDisplay === FORMAT_PREF_12H ? 30 : 15
+    let hoursAngle = Math.floor((hours + ((minutes + (seconds / 60)) / 60)) * hourAngleFactor);
 
     secondsArc.tween(secondsArc.angle, secondsAngle,
                      secondsAngle - secondsArc.angle > 6 ?
